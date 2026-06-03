@@ -9,7 +9,7 @@
       settings: {
         provider: 'thesportsdb',
         apiKey: '123',
-        railwayApiUrl: 'https://DIN-RAILWAY-URL.up.railway.app',
+        railwayApiUrl: 'https://fodbolda-final-lz17-production.up.railway.app',
         autoUpdateDesktop: true,
         autoUpdateMinutes: 60
       },
