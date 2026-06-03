@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://www.thesportsdb.com http://localhost:* https://*.up.railway.app https:; img-src 'self' https: data:; style-src 'self'; script-src 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football Result Register v1.2</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-art" aria-hidden="true">
+        <img src="assets/soccer-player-corner.jpg" alt="" />
+      </div>
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <div>
+          <strong>fodbold.eu</strong>
+          <span>Result Register v1.2</span>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="Hovedmenu">
+        <button class="nav-btn active" data-page-target="dashboard">Dashboard</button>
+        <button class="nav-btn" data-page-target="leagues">Ligaer</button>
+        <button class="nav-btn" data-page-target="upcoming">Kommende kampe</button>
+        <button class="nav-btn" data-page-target="archive">Arkiv</button>
+        <button class="nav-btn" data-page-target="h2h">Indbyrdes</button>
+        <button class="nav-btn" data-page-target="odds">Oddssætter</button>
+        <button class="nav-btn" data-page-target="favorites">Favoritter</button>
+        <button class="nav-btn" data-page-target="register">Register</button>
+        <button class="nav-btn" data-page-target="admin">Admin</button>
+        <button class="nav-btn" data-page-target="settings">Indstillinger</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <select id="languageSelect" aria-label="Language"></select>
+        <button id="helpBtn" class="ghost full">Hjælp</button>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Railway-ready desktop sports register</p>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle" class="subtitle">Rent overblik over ligaer, kampe, Railway og database.</p>
+        </div>
+        <p id="status" class="status">Klar.</p>
+      </header>
+
+      <main class="pages">
+        <section class="page active" data-page="dashboard">
+          <div class="page-grid two">
+            <section class="card stats-card">
+              <div class="section-head"><h2>Overblik</h2><span class="pill">Live lokalt</span></div>
+              <div class="stats">
+                <div><strong id="statLeagues">0</strong><span>Ligaer</span></div>
+                <div><strong id="statTeams">0</strong><span>Hold</span></div>
+                <div><strong id="statTotal">0</strong><span>Kampe</span></div>
+                <div><strong id="statFinished">0</strong><span>Afsluttede</span></div>
+                <div><strong id="statUpcoming">0</strong><span>Kommende</span></div>
+              </div>
+              <p class="micro">Sidst opdateret: <span id="lastUpdatedText">-</span></p>
+            </section>
+
+            <section class="card quick-card">
+              <div class="section-head"><h2>Hurtige handlinger</h2><span class="pill">v1.2</span></div>
+              <div class="button-grid">
+                <button id="fetchAllBtn">Hent/opdater alle ligaer</button>
+                <button id="historyUpdateBtn" class="secondary">Hent 5 års historik</button>
+                <button id="syncFromRailwayBtn" class="secondary">Hent fra Railway</button>
+                <button id="adminUpdateBtn" class="gold">Admin: opdater alt nu</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="page" data-page="leagues">
+          <section class="card leagues-card">
+            <div class="section-head">
+              <div><h2>Ligaer</h2><p class="micro">Tilføj ligaer via dropdown og vælg hvilke der er aktive.</p></div>
+              <button id="fetchAvailableLeaguesBtn" class="secondary">Hent tilgængelige ligaer</button>
+            </div>
+            <div class="form-grid add-league-dropdown-form">
+              <label><span>Søg liga</span><input id="availableLeagueSearch" placeholder="Premier League, Champions League, UEFA..."></label>
+              <label><span>Vælg liga</span><select id="availableLeagueSelect"><option value="">Vælg en liga...</option></select></label>
+              <button id="addLeagueInlineBtn" class="secondary align-end">Tilføj valgt liga</button>
+            </div>
+            <div id="leagueList" class="league-list"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="upcoming">
+          <section class="card upcoming-card">
+            <div class="section-head"><div><h2>Kommende kampe</h2><p class="micro">Vis kommende kampe fra lokalt register eller Railway-data.</p></div><span class="pill">Næste kampe</span></div>
+            <div class="form-grid upcoming-grid">
+              <label><span>Liga</span><select id="upcomingLeague"><option value="all">Alle ligaer</option></select></label>
+              <label><span>Antal</span><input id="upcomingLimit" type="number" min="5" max="100" value="20"></label>
+            </div>
+            <div class="button-row">
+              <button id="upcomingRefreshBtn">Vis kommende</button>
+              <button id="upcomingAllBtn" class="secondary">Vis alle kommende i register</button>
+            </div>
+            <div id="upcomingList" class="match-list upcoming-list"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="archive">
+          <section class="card archive-card">
+            <div class="section-head"><div><h2>Arkiv-søgning</h2><p class="micro">Søg i historikken og få kampene vist som en liste.</p></div><span class="pill">Kamp-liste</span></div>
+            <div class="form-grid archive-grid">
+              <label><span>Søg</span><input id="archiveSearchInput" list="teamNames" placeholder="Real Madrid, Arsenal, finale..."></label>
+              <label><span>Liga</span><select id="archiveLeague"><option value="all">Alle ligaer</option></select></label>
+              <label><span>Historik</span><select id="archiveYears"><option value="5">5 år</option><option value="10">10 år</option><option value="15">15 år</option><option value="30">Alle / 30 år</option></select></label>
+              <label><span>Status</span><select id="archiveStatus"><option value="finished">Afsluttede</option><option value="all">Alle</option><option value="upcoming">Kommende</option></select></label>
+            </div>
+            <div class="button-row">
+              <button id="archiveSearchBtn">Søg i arkiv</button>
+              <button id="archiveClearBtn" class="ghost">Ryd arkivsøgning</button>
+            </div>
+            <div id="archiveResults" class="match-list archive-results"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="h2h">
+          <section class="card h2h-card">
+            <div class="section-head"><div><h2>Indbyrdes statistik 1-X-2</h2><p class="micro">Vælg to hold og se hvem der har vundet mest indbyrdes.</p></div><span class="pill">5 år tilbage</span></div>
+            <div class="form-grid h2h-grid">
+              <label><span>Hold A</span><input id="h2hTeamA" list="teamNames" placeholder="Real Madrid"></label>
+              <label><span>Hold B</span><input id="h2hTeamB" list="teamNames" placeholder="Manchester City"></label>
+              <label><span>Historik</span><select id="h2hYears"><option value="5">5 år</option><option value="10">10 år</option><option value="15">15 år</option></select></label>
+              <label><span>Liga</span><select id="h2hLeague"><option value="all">Alle ligaer</option></select></label>
+            </div>
+            <div class="button-row">
+              <button id="h2hBtn">Beregn indbyrdes</button>
+              <button id="topPairsBtn" class="secondary">Vis hyppigste opgør</button>
+            </div>
+            <datalist id="teamNames"></datalist>
+            <div id="h2hResult" class="h2h-result"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="odds">
+          <section class="card odds-card">
+            <div class="section-head"><div><h2>Oddssætter</h2><p class="micro">Vælg liga, søg kamp, markér favorit og beregn 1-X-2 odds.</p></div><span class="pill">1-X-2</span></div>
+            <div class="form-grid odds-search-grid">
+              <label><span>Liga</span><select id="oddsLeague"><option value="all">Alle ligaer</option></select></label>
+              <label><span>Søg kamp</span><input id="oddsMatchSearch" placeholder="Skriv fx Arsenal, Real Madrid, finale..."></label>
+              <label><span>Vælg kamp</span><select id="oddsMatchSelect"><option value="">Søg eller vælg kamp...</option></select></label>
+              <label class="favorite-toggle"><span>Favoritkamp</span><label class="checkline"><input id="oddsFavoriteCheckbox" type="checkbox"> <span>Sæt kryds</span></label></label>
+            </div>
+            <div class="form-grid h2h-grid odds-config-grid">
+              <label><span>Hold A</span><input id="oddsTeamA" list="teamNames" placeholder="Real Madrid"></label>
+              <label><span>Hold B</span><input id="oddsTeamB" list="teamNames" placeholder="Manchester City"></label>
+              <label><span>Historik</span><select id="oddsYears"><option value="5">5 år</option><option value="10">10 år</option><option value="15">15 år</option></select></label>
+              <label><span>Bookmaker-margin</span><input id="oddsMargin" type="number" min="0" max="40" step="0.5" value="7"></label>
+              <label><span>Min. kampe for god sikkerhed</span><input id="oddsMinSample" type="number" min="1" max="100" step="1" value="6"></label>
+            </div>
+            <div class="button-row">
+              <button id="oddsBtn">Sæt odds</button>
+              <button id="oddsCopyH2HBtn" class="secondary">Kopiér hold fra H2H</button>
+              <button id="oddsRefreshMatchesBtn" class="secondary">Opdater kamp-dropdown</button>
+            </div>
+            <div class="odds-workspace">
+              <div><h3>Matchende kampe</h3><div id="oddsMatchList" class="match-list odds-match-list"></div></div>
+              <div><h3>Favoritter</h3><p class="micro">Favoritterne ligger på siden “Favoritter”.</p></div>
+            </div>
+            <div id="oddsResult" class="odds-result"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="favorites">
+          <section class="card favorite-page-card">
+            <div class="section-head"><div><h2>Favoritkampe</h2><p class="micro">Dine markerede kampe fra oddssætteren.</p></div><span class="pill">★</span></div>
+            <div id="favoriteMatchList" class="match-list favorite-match-list"></div>
+          </section>
+        </section>
+
+        <section class="page" data-page="register">
+          <section class="card table-card">
+            <div class="table-head">
+              <div><h2>Resultat-register</h2><p class="micro">Alle importerede kampe i én tabel.</p></div>
+              <div class="filters">
+                <input id="searchInput" placeholder="Søg hold, runde, liga, status..." />
+                <select id="leagueFilter"><option value="all">Alle ligaer</option></select>
+                <select id="statusFilter"><option value="all">Alle</option><option value="finished">Afsluttede</option><option value="upcoming">Kommende</option></select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Dato</th><th>Liga</th><th>Hjemme</th><th>Resultat</th><th>Ude</th><th>Runde</th><th>Status</th><th>Detaljer</th></tr></thead>
+                <tbody id="matchesBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="page" data-page="admin">
+          <section class="card admin-card">
+            <div class="section-head"><div><h2>Admin</h2><p class="micro">Tekniske handlinger til import, historik, Railway og eksport.</p></div><span class="pill">Backend</span></div>
+            <div class="button-grid">
+              <button id="syncToRailwayBtn" class="secondary">Sync til Railway</button>
+              <button id="exportJsonBtn" class="ghost">Eksportér JSON</button>
+              <button id="exportCsvBtn" class="ghost">Eksportér CSV</button>
+              <button id="importJsonBtn" class="ghost">Importér JSON</button>
+              <button id="clearBtn" class="danger">Ryd register</button>
+            </div>
+          </section>
+        </section>
+
+        <section class="page" data-page="settings">
+          <section class="card controls-card">
+            <div class="section-head"><div><h2>Indstillinger</h2><p class="micro">API, Railway URL og auto-opdatering.</p></div><span class="pill">Setup</span></div>
+            <div class="form-grid">
+              <label><span>Datakilde</span><select id="providerSelect"><option value="thesportsdb">TheSportsDB v1</option><option value="apifootball" disabled>API-Football senere</option></select></label>
+              <label><span>TheSportsDB API-nøgle</span><input id="apiKeyInput" value="123" placeholder="123" /></label>
+              <label><span>Railway API URL</span><input id="railwayUrlInput" placeholder="http://localhost:8080 eller https://ditprojekt.up.railway.app" /></label>
+              <label><span>Auto-opdatering</span><select id="autoUpdateSelect"><option value="true">Ja, hver time</option><option value="false">Nej</option></select></label>
+            </div>
+            <div class="button-row"><button id="saveSettingsBtn">Gem indstillinger</button></div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="detailsDialog" class="wide-dialog">
+    <div class="dialog-head"><h2 id="detailsTitle">Kampdetaljer</h2><button id="closeDetailsBtn" class="ghost">×</button></div>
+    <div id="detailsBody"></div>
+  </dialog>
+
+  <dialog id="helpDialog">
+    <div class="dialog-head"><h2>Sådan bruges appen</h2><button id="closeHelpBtn" class="ghost">×</button></div>
+    <ol>
+      <li>Start med Ligaer-siden og tilføj de ligaer du vil følge.</li>
+      <li>Brug Admin/Dashboard til at hente data og 5 års historik.</li>
+      <li>Brug Arkiv, Indbyrdes og Oddssætter som hver sin rene arbejdsflade.</li>
+      <li>Railway backend kører med npm run backend og PostgreSQL via DATABASE_URL.</li>
+    </ol>
+    <p><button id="openApiDocsBtn" class="secondary">Åbn TheSportsDB docs</button></p>
+  </dialog>
+
+  <script src="web-shim.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
