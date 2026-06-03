@@ -1,0 +1,52 @@
+{
+  "name": "football-result-register",
+  "version": "1.2.0",
+  "description": "Windows desktop app for fodbold.eu with sidebar navigation, soccer corner image, one page per function, Railway sync, PostgreSQL backend, history, archive lists, upcoming matches, head-to-head statistics, dynamic odds setter and favorite matches.",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "backend": "node server/server.js",
+    "dev:all": "concurrently \"npm run backend\" \"npm start\"",
+    "dist": "electron-builder --win portable",
+    "dist-installer": "electron-builder --win nsis"
+  },
+  "author": "Vault1973 + ChatGPT",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.13.1"
+  },
+  "build": {
+    "appId": "dk.vault1973.footballregister",
+    "productName": "Football Result Register",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "server/**/*",
+      "package.json",
+      "README_DA.md"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
